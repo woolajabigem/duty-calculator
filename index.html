@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panama Shift Duty Calc</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen p-4 md:p-10">
+    <div class="max-w-5xl mx-auto">
+        <header class="mb-8">
+            <h1 class="text-3xl font-extrabold text-slate-800">Duty Roster Calculator</h1>
+            <p class="text-slate-600">Panama Shift (2-2-3) Man-Hour Distribution</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left Column: Inputs -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- 1. Total Pool -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-lg font-bold mb-4 text-blue-600 flex items-center">
+                        <span class="mr-2">👥</span> 1. Total Personnel Pool
+                    </h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Total Senior Officers</label>
+                            <input type="number" id="poolSO" value="5" class="mt-1 w-full p-2 bg-slate-50 border rounded-md" oninput="calculate()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Total Junior Officers</label>
+                            <input type="number" id="poolJO" value="12" class="mt-1 w-full p-2 bg-slate-50 border rounded-md" oninput="calculate()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Team Composition Requirement -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-lg font-bold mb-4 text-green-600 flex items-center">
+                        <span class="mr-2">📋</span> 2. Shift Requirement (Per Team)
+                    </h2>
+                    <p class="text-xs text-slate-500 mb-4 italic">How many people must be on duty at any given second?</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">SO per Shift</label>
+                            <input type="number" id="reqSO" value="1" class="mt-1 w-full p-2 bg-slate-50 border rounded-md" oninput="calculate()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">JO per Shift</label>
+                            <input type="number" id="reqJO" value="3" class="mt-1 w-full p-2 bg-slate-50 border rounded-md" oninput="calculate()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Commitments -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-lg font-bold mb-4 text-orange-600 flex items-center">
+                        <span class="mr-2">⚠️</span> 3. Commitments & Leave
+                    </h2>
+                    <p class="text-xs text-slate-500 mb-4 italic">Enter total man-days lost to Leave, Course, or MC for the whole pool.</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">SO Total Leave Days</label>
+                            <input type="number" id="leaveSO" value="0" class="mt-1 w-full p-2 bg-slate-50 border rounded-md" oninput="calculate()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">JO Total Leave Days</label>
+                            <input type="number" id="leaveJO" value="0" class="mt-1 w-full p-2 bg-slate-50 border rounded-md" oninput="calculate()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Results -->
+            <div class="lg:col-span-1">
+                <div class="bg-slate-800 text-white p-6 rounded-xl shadow-lg sticky top-10">
+                    <h2 class="text-xl font-bold mb-6 border-b border-slate-700 pb-2">Cycle Estimates</h2>
+                    
+                    <div class="mb-8">
+                        <p class="text-slate-400 text-xs uppercase tracking-wider font-semibold">Avg. Hours Per Senior</p>
+                        <div class="flex items-baseline">
+                            <span id="resSO" class="text-4xl font-mono text-yellow-400 font-bold">0</span>
+                            <span class="ml-2 text-slate-400">hrs/mth</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <p class="text-slate-400 text-xs uppercase tracking-wider font-semibold">Avg. Hours Per Junior</p>
+                        <div class="flex items-baseline">
+                            <span id="resJO" class="text-4xl font-mono text-emerald-400 font-bold">0</span>
+                            <span class="ml-2 text-slate-400">hrs/mth</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-700 p-4 rounded-lg">
+                        <h3 class="text-sm font-bold mb-2 text-slate-300">Panama Shift Health Check</h3>
+                        <p id="healthMsg" class="text-xs leading-relaxed text-slate-400">
+                            Calculation based on 28-day cycle. Standard workload is approx 168 hours/month.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            // Inputs
+            const poolSO = parseFloat(document.getElementById('poolSO').value) || 0;
+            const poolJO = parseFloat(document.getElementById('poolJO').value) || 0;
+            const reqSO = parseFloat(document.getElementById('reqSO').value) || 0;
+            const reqJO = parseFloat(document.getElementById('reqJO').value) || 0;
+            const leaveSO = parseFloat(document.getElementById('leaveSO').value) || 0;
+            const leaveJO = parseFloat(document.getElementById('leaveJO').value) || 0;
+
+            const days = 28; // Standard roster cycle
+            
+            // Total organizational need
+            const totalNeedSO = reqSO * 24 * days;
+            const totalNeedJO = reqJO * 24 * days;
+
+            // Leave Logic: 1 day of leave = 12 hours of duty lost from the available pool
+            const effectivePoolSO = poolSO - (leaveSO * 12 / (totalNeedSO / poolSO || 1));
+            const effectivePoolJO = poolJO - (leaveJO * 12 / (totalNeedJO / poolJO || 1));
+
+            // Result Calculation
+            // We calculate how many hours of work must be distributed among the remaining staff
+            const hoursSO = poolSO > 0 ? (totalNeedSO / (poolSO - (leaveSO / 14))) : 0;
+            const hoursJO = poolJO > 0 ? (totalNeedJO / (poolJO - (leaveJO / 14))) : 0;
+
+            document.getElementById('resSO').innerText = Math.round(hoursSO);
+            document.getElementById('resJO').innerText = Math.round(hoursJO);
+
+            // Dynamic Health Message
+            let msg = "Based on a 28-day cycle. ";
+            if (hoursJO > 180) {
+                msg += "⚠️ High workload detected for Juniors. Consider increasing manpower.";
+            } else if (hoursJO < 150) {
+                msg += "✅ Manpower is healthy for this requirement.";
+            } else {
+                msg += "⚖️ Workload is balanced for a standard Panama cycle.";
+            }
+            document.getElementById('healthMsg').innerText = msg;
+        }
+
+        // Run once on load
+        window.onload = calculate;
+    </script>
+</body>
+</html>
