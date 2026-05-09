@@ -3,207 +3,265 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duty Command: Calendar Roster</title>
+    <title>Ops Duty Command - Calendar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .duty-cell { min-width: 120px; font-size: 0.7rem; }
-        .calendar-grid { display: grid; grid-template-columns: 80px 1fr 1fr 1fr 1fr 1fr; border-top: 1px solid #e2e8f0; }
-        .header-grid { display: grid; grid-template-columns: 80px 1fr 1fr 1fr 1fr 1fr; background: #1e293b; color: white; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; }
+        @media print { .no-print { display: none; } }
+        .calendar-day { min-height: 120px; border: 1px solid #e2e8f0; transition: all 0.2s; }
+        .calendar-day:hover { background-color: #f8fafc; }
+        .duty-tag { font-size: 0.65rem; padding: 1px 4px; border-radius: 3px; margin-bottom: 1px; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .tag-day { background: #dcfce7; color: #166534; border-left: 3px solid #22c55e; }
+        .tag-night { background: #f1f5f9; color: #334155; border-left: 3px solid #64748b; }
+        .tag-shadow { background: #f3e8ff; color: #6b21a8; border-left: 3px solid #a855f7; }
+        .tag-comsec { background: #ffedd5; color: #9a3412; border-left: 3px solid #f97316; }
+        .tag-datahall { background: #dbeafe; color: #1e40af; border-left: 3px solid #3b82f6; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen p-2 md:p-6 font-sans text-slate-800">
+<body class="bg-slate-50 text-slate-900 font-sans">
 
-    <div class="max-w-[1600px] mx-auto">
-        <header class="mb-6 flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border">
+    <div class="max-w-[1600px] mx-auto p-4">
+        <!-- Header -->
+        <header class="flex flex-wrap justify-between items-center mb-6 bg-white p-6 rounded-2xl shadow-sm border gap-4">
             <div>
-                <h1 class="text-2xl font-black text-slate-900 tracking-tight">Duty Command Center</h1>
-                <p class="text-slate-500 text-xs font-medium uppercase tracking-widest">Panama Cycle + Specialized Commitments</p>
+                <h1 class="text-3xl font-black tracking-tight text-slate-800">Duty Command Center</h1>
+                <p class="text-slate-500 text-sm font-medium uppercase tracking-tighter">Panama 2-2-3 Global Roster</p>
             </div>
-            <button onclick="window.print()" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-700">Print Roster</button>
+            
+            <div class="flex items-center gap-4 no-print">
+                <div class="flex bg-slate-100 p-1 rounded-xl border">
+                    <button onclick="changeMonth(-1)" class="p-2 hover:bg-white rounded-lg transition">◀</button>
+                    <div id="currentMonthDisplay" class="px-6 py-2 font-bold text-slate-700 min-w-[150px] text-center">Month Year</div>
+                    <button onclick="changeMonth(1)" class="p-2 hover:bg-white rounded-lg transition">▶</button>
+                </div>
+                <button onclick="window.print()" class="bg-slate-800 text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg transition active:scale-95">Print Roster</button>
+            </div>
         </header>
 
-        <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
-            
-            <!-- LEFT PANEL: SETTINGS & PERSONNEL -->
-            <div class="xl:col-span-1 space-y-6 no-print">
-                
-                <!-- 1. ADD PERSONNEL -->
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-                    <h2 class="text-sm font-bold mb-4 text-blue-700 uppercase tracking-wider">1. Personnel Management</h2>
-                    <div class="space-y-2 mb-4">
-                        <input type="text" id="pName" placeholder="Name" class="w-full p-2 text-sm border rounded-lg outline-none">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <!-- Sidebar -->
+            <div class="lg:col-span-1 space-y-6 no-print">
+                <!-- Personnel -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border">
+                    <h2 class="text-sm font-bold text-blue-600 uppercase mb-4 tracking-widest flex justify-between">
+                        Personnel Pool <span id="pCount" class="text-slate-400">0</span>
+                    </h2>
+                    <div class="space-y-2">
+                        <input type="text" id="pName" placeholder="Name" class="w-full p-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                         <div class="grid grid-cols-2 gap-2">
-                            <select id="pRank" class="p-2 text-sm border rounded-lg bg-slate-50">
+                            <select id="pRank" class="p-2 border rounded-xl text-sm bg-slate-50">
                                 <option value="SO">SO (Senior)</option>
                                 <option value="JO">JO (Junior)</option>
                             </select>
-                            <select id="pGroup" class="p-2 text-sm border rounded-lg bg-slate-50">
-                                <option value="A">Group A</option>
-                                <option value="B">Group B</option>
-                                <option value="C">Group C</option>
-                                <option value="D">Group D</option>
+                            <select id="pTeam" class="p-2 border rounded-xl text-sm bg-slate-50">
+                                <option value="COU">COU</option>
+                                <option value="CIU">CIU</option>
+                                <option value="SOC">SOC</option>
                             </select>
                         </div>
-                        <select id="pTeam" class="w-full p-2 text-sm border rounded-lg bg-slate-50">
-                            <option value="COU">COU</option>
-                            <option value="CIU">CIU</option>
-                            <option value="SOC">SOC</option>
-                        </select>
-                        <button onclick="addPerson()" class="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-bold hover:bg-blue-700">Add to Pool</button>
+                        <button onclick="addPerson()" class="w-full bg-blue-600 text-white py-2.5 rounded-xl font-bold hover:bg-blue-700 transition">Add Personnel</button>
                     </div>
-                    
-                    <div class="max-h-60 overflow-y-auto border rounded-lg text-[10px]">
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-100"><tr><th class="p-2">Name</th><th class="p-2">Grp</th><th class="p-2">Rank</th><th class="p-2"></th></tr></thead>
-                            <tbody id="pTable"></tbody>
-                        </table>
+
+                    <div class="mt-4 max-h-[300px] overflow-y-auto border-t pt-4">
+                        <div id="personList" class="space-y-2"></div>
                     </div>
                 </div>
 
-                <!-- 2. COMMITMENT REQUIREMENTS -->
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-                    <h2 class="text-sm font-bold mb-4 text-purple-700 uppercase tracking-wider">2. Commitments (Per Day)</h2>
-                    <div class="space-y-4">
-                        <div class="p-3 bg-purple-50 rounded-lg">
-                            <p class="text-[10px] font-bold text-purple-800 uppercase mb-2">CNOC Shadow</p>
-                            <div class="grid grid-cols-2 gap-2">
-                                <input type="number" id="sSO" placeholder="SO" value="1" class="p-1 text-xs border rounded w-full">
-                                <input type="number" id="sJO" placeholder="JO" value="1" class="p-1 text-xs border rounded w-full">
+                <!-- Daily Requirements -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border">
+                    <h2 class="text-sm font-bold text-purple-600 uppercase mb-4 tracking-widest">Daily Requirements</h2>
+                    <div class="space-y-4 text-xs">
+                        <div class="flex justify-between items-center p-2 bg-purple-50 rounded-lg">
+                            <span>Shadow (SO/JO)</span>
+                            <div class="flex gap-1">
+                                <input type="number" id="reqShadowSO" value="1" class="w-10 p-1 border rounded text-center" oninput="renderCalendar()">
+                                <input type="number" id="reqShadowJO" value="2" class="w-10 p-1 border rounded text-center" oninput="renderCalendar()">
                             </div>
                         </div>
-                        <div class="p-3 bg-orange-50 rounded-lg">
-                            <p class="text-[10px] font-bold text-orange-800 uppercase mb-2">COMSEC (SO)</p>
-                            <input type="number" id="cSO" value="1" class="p-1 text-xs border rounded w-full">
+                        <div class="flex justify-between items-center p-2 bg-orange-50 rounded-lg">
+                            <span>COMSEC (SO)</span>
+                            <input type="number" id="reqComsec" value="1" class="w-10 p-1 border rounded text-center" oninput="renderCalendar()">
                         </div>
-                        <div class="p-3 bg-blue-50 rounded-lg">
-                            <p class="text-[10px] font-bold text-blue-800 uppercase mb-2">Datahall (JO)</p>
-                            <input type="number" id="dJO" value="1" class="p-1 text-xs border rounded w-full">
+                        <div class="flex justify-between items-center p-2 bg-blue-50 rounded-lg">
+                            <span>Datahall (JO)</span>
+                            <input type="number" id="reqDatahall" value="2" class="w-10 p-1 border rounded text-center" oninput="renderCalendar()">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- RIGHT PANEL: THE CALENDAR ROSTER -->
-            <div class="xl:col-span-3 space-y-6">
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="header-grid p-3">
-                        <div>Date</div>
-                        <div>Day Shift (24/7)</div>
-                        <div>Night Shift (24/7)</div>
-                        <div>CNOC Shadow</div>
-                        <div>COMSEC</div>
-                        <div>Datahall</div>
+            <!-- Calendar Container -->
+            <div class="lg:col-span-3">
+                <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+                    <div class="grid grid-cols-7 bg-slate-800 text-white text-[10px] uppercase font-bold text-center py-3 tracking-widest">
+                        <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
                     </div>
-                    <div id="calendarBody" class="divide-y divide-slate-100 h-[80vh] overflow-y-auto">
-                        <!-- Calendar rows injected here -->
+                    <div id="calendarGrid" class="grid grid-cols-7 border-l border-t">
+                        <!-- Days generated here -->
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
     <script>
         let people = [];
-        // Panama 14-day pattern for Group A (1=Work, 0=Off)
-        // Groups B, C, D are shifted versions of this
-        const panamaPattern = [1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0];
+        let currentMonth = new Date(2026, 4, 1); // Start with May 2026 (Month is 0-indexed)
+
+        // Panama Pattern: 1=Day Shift, 2=Night Shift, 0=Off
+        // Groups rotate based on this 14-day cycle
+        const patternA = [1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0];
+        const patternC = [2, 2, 0, 0, 2, 2, 2, 0, 0, 2, 2, 0, 0, 0];
+        const patternB = [0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1];
+        const patternD = [0, 0, 2, 2, 0, 0, 0, 2, 2, 0, 0, 2, 2, 2];
+
+        // Reference point for Panama Cycle (Monday, Jan 1, 2024)
+        const refDate = new Date(2024, 0, 1);
 
         function addPerson() {
             const name = document.getElementById('pName').value.trim();
-            if(!name) return;
-            people.push({
-                id: Date.now(),
-                name,
-                rank: document.getElementById('pRank').value,
-                group: document.getElementById('pGroup').value,
-                team: document.getElementById('pTeam').value
-            });
+            if (!name) return;
+
+            const rank = document.getElementById('pRank').value;
+            const team = document.getElementById('pTeam').value;
+            
+            // Auto-allocate Group
+            const counts = { A: 0, B: 0, C: 0, D: 0 };
+            people.filter(p => p.rank === rank).forEach(p => counts[p.group]++);
+            const group = Object.keys(counts).reduce((a, b) => counts[a] <= counts[b] ? a : b);
+
+            people.push({ id: Date.now(), name, rank, team, group });
             document.getElementById('pName').value = '';
-            renderPersonnel();
-            generateRoster();
+            renderPeople();
+            renderCalendar();
+        }
+
+        function renderPeople() {
+            const list = document.getElementById('personList');
+            document.getElementById('pCount').innerText = people.length;
+            list.innerHTML = people.map(p => `
+                <div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl text-xs border border-slate-100">
+                    <div>
+                        <span class="font-bold">${p.name}</span>
+                        <div class="text-[9px] text-slate-400">${p.team} • ${p.rank}</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <select onchange="updateGroup(${p.id}, this.value)" class="bg-white border rounded p-1 font-bold text-blue-600">
+                            <option value="A" ${p.group==='A'?'selected':''}>A</option>
+                            <option value="B" ${p.group==='B'?'selected':''}>B</option>
+                            <option value="C" ${p.group==='C'?'selected':''}>C</option>
+                            <option value="D" ${p.group==='D'?'selected':''}>D</option>
+                        </select>
+                        <button onclick="removePerson(${p.id})" class="text-red-400 hover:text-red-600">✕</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateGroup(id, val) {
+            const p = people.find(p => p.id === id);
+            if (p) p.group = val;
+            renderCalendar();
         }
 
         function removePerson(id) {
             people = people.filter(p => p.id !== id);
-            renderPersonnel();
-            generateRoster();
+            renderPeople();
+            renderCalendar();
         }
 
-        function renderPersonnel() {
-            const t = document.getElementById('pTable');
-            t.innerHTML = people.map(p => `
-                <tr class="border-b">
-                    <td class="p-2">${p.name}</td>
-                    <td class="p-2 font-bold">${p.group}</td>
-                    <td class="p-2 text-blue-600">${p.rank}</td>
-                    <td class="p-2 text-right"><button onclick="removePerson(${p.id})" class="text-red-400 font-bold">×</button></td>
-                </tr>
-            `).join('');
+        function changeMonth(dir) {
+            currentMonth.setMonth(currentMonth.getMonth() + dir);
+            renderCalendar();
         }
 
-        function getShiftStatus(group, dayIndex) {
-            // DayIndex 0-29
-            // Panama Groups logic (Simple 4-team rotation)
-            const patternIdx = dayIndex % 14;
-            // Simplified Logic for 2-2-3 rotation mapping
-            if (group === 'A') return panamaPattern[patternIdx] ? 'DAY' : 'OFF';
-            if (group === 'B') return panamaPattern[patternIdx] ? 'NIGHT' : 'OFF';
-            if (group === 'C') return panamaPattern[(patternIdx + 7) % 14] ? 'DAY' : 'OFF';
-            if (group === 'D') return panamaPattern[(patternIdx + 7) % 14] ? 'NIGHT' : 'OFF';
-            return 'OFF';
+        function getDutyForDay(person, date) {
+            const diffTime = date.getTime() - refDate.getTime();
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const cycleIdx = ((diffDays % 14) + 14) % 14;
+
+            if (person.group === 'A') return patternA[cycleIdx];
+            if (person.group === 'B') return patternB[cycleIdx];
+            if (person.group === 'C') return patternC[cycleIdx];
+            if (person.group === 'D') return patternD[cycleIdx];
+            return 0;
         }
 
-        function generateRoster() {
-            const body = document.getElementById('calendarBody');
-            body.innerHTML = '';
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            const display = document.getElementById('currentMonthDisplay');
+            grid.innerHTML = '';
             
-            const sSO_req = parseInt(document.getElementById('sSO').value) || 0;
-            const sJO_req = parseInt(document.getElementById('sJO').value) || 0;
-            const cSO_req = parseInt(document.getElementById('cSO').value) || 0;
-            const dJO_req = parseInt(document.getElementById('dJO').value) || 0;
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            display.innerText = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentMonth);
 
-            for (let d = 1; d <= 30; d++) {
-                const dayIdx = d - 1;
-                let dayShift = [], nightShift = [], shadow = [], comsec = [], datahall = [];
+            const firstDay = (new Date(year, month, 1).getDay() + 6) % 7; // Monday start
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            // Requirements
+            const sSO_r = parseInt(document.getElementById('reqShadowSO').value) || 0;
+            const sJO_r = parseInt(document.getElementById('reqShadowJO').value) || 0;
+            const c_r = parseInt(document.getElementById('reqComsec').value) || 0;
+            const d_r = parseInt(document.getElementById('reqDatahall').value) || 0;
+
+            // Empty slots for previous month
+            for (let i = 0; i < firstDay; i++) {
+                grid.innerHTML += `<div class="calendar-day bg-slate-50/50"></div>`;
+            }
+
+            // Generate Days
+            for (let d = 1; d <= daysInMonth; d++) {
+                const date = new Date(year, month, d);
+                let dayHtml = `<div class="calendar-day p-1 bg-white border-r border-b">
+                    <div class="text-[10px] font-bold text-slate-300 mb-1">${d}</div>`;
                 
-                // 1. Assign 24/7 Shifts based on Panama Pattern
+                let dayShift = [], nightShift = [], offPool = [];
+
                 people.forEach(p => {
-                    const status = getShiftStatus(p.group, dayIdx);
-                    if (status === 'DAY') dayShift.push(p);
-                    else if (status === 'NIGHT') nightShift.push(p);
+                    const status = getDutyForDay(p, date);
+                    if (status === 1) dayShift.push(p);
+                    else if (status === 2) nightShift.push(p);
+                    else offPool.push({...p});
                 });
 
-                // 2. Assign specialized commitments from the "OFF" pool
-                // To keep it simple for a roster, we pick people who are "OFF" shift that day
-                const offPool = people.filter(p => getShiftStatus(p.group, dayIdx) === 'OFF');
-                
+                // Display Shifts
+                dayShift.forEach(p => dayHtml += `<span class="duty-tag tag-day">☀️ ${p.name}</span>`);
+                nightShift.forEach(p => dayHtml += `<span class="duty-tag tag-night">🌙 ${p.name}</span>`);
+
+                // Distribute Commitments from Off Pool
                 let soOff = offPool.filter(p => p.rank === 'SO');
                 let joOff = offPool.filter(p => p.rank === 'JO');
 
-                // Fill COMSEC (SO Only)
-                for(let i=0; i<cSO_req && soOff.length > 0; i++) comsec.push(soOff.shift());
-                
-                // Fill Shadow (SO then JO)
-                for(let i=0; i<sSO_req && soOff.length > 0; i++) shadow.push(soOff.shift());
-                for(let i=0; i<sJO_req && joOff.length > 0; i++) shadow.push(joOff.shift());
-                
-                // Fill Datahall (JO Only)
-                for(let i=0; i<dJO_req && joOff.length > 0; i++) datahall.push(joOff.shift());
+                // COMSEC (SO Only)
+                for (let i = 0; i < c_r && soOff.length > 0; i++) {
+                    let p = soOff.shift();
+                    dayHtml += `<span class="duty-tag tag-comsec">🔑 COMSEC: ${p.name}</span>`;
+                }
+                // Shadow SO
+                for (let i = 0; i < sSO_r && soOff.length > 0; i++) {
+                    let p = soOff.shift();
+                    dayHtml += `<span class="duty-tag tag-shadow">👥 SHADOW: ${p.name}</span>`;
+                }
+                // Shadow JO
+                for (let i = 0; i < sJO_r && joOff.length > 0; i++) {
+                    let p = joOff.shift();
+                    dayHtml += `<span class="duty-tag tag-shadow">👥 SHADOW: ${p.name}</span>`;
+                }
+                // Datahall
+                for (let i = 0; i < d_r && joOff.length > 0; i++) {
+                    let p = joOff.shift();
+                    dayHtml += `<span class="duty-tag tag-datahall">❄️ DATA: ${p.name}</span>`;
+                }
 
-                // Build Row HTML
-                body.innerHTML += `
-                    <div class="calendar-grid p-2 hover:bg-slate-50 transition">
-                        <div class="text-xs font-bold text-slate-400">Day ${d}</div>
-                        <div class="duty-cell">${dayShift.map(p => `<div>• ${p.name} <span class="text-[8px] text-slate-400">(${p.team})</span></div>`).join('')}</div>
-                        <div class="duty-cell">${nightShift.map(p => `<div>• ${p.name} <span class="text-[8px] text-slate-400">(${p.team})</span></div>`).join('')}</div>
-                        <div class="duty-cell text-purple-600">${shadow.map(p => `<div>• ${p.name}</div>`).join('')}</div>
-                        <div class="duty-cell text-orange-600">${comsec.map(p => `<div>• ${p.name}</div>`).join('')}</div>
-                        <div class="duty-cell text-blue-600">${datahall.map(p => `<div>• ${p.name}</div>`).join('')}</div>
-                    </div>
-                `;
+                dayHtml += `</div>`;
+                grid.innerHTML += dayHtml;
             }
         }
+
+        window.onload = () => {
+            renderPeople();
+            renderCalendar();
+        };
     </script>
 </body>
 </html>
