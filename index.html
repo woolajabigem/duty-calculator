@@ -3,149 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panama Shift Duty Calc</title>
+    <title>Duty Roster Breakdown</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-100 min-h-screen p-4 md:p-10">
-    <div class="max-w-5xl mx-auto">
-        <header class="mb-8">
-            <h1 class="text-3xl font-extrabold text-slate-800">Duty Roster Calculator</h1>
-            <p class="text-slate-600">Panama Shift (2-2-3) Man-Hour Distribution</p>
+<body class="bg-slate-100 min-h-screen p-4 md:p-10 font-sans">
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-8 border-b border-slate-300 pb-4">
+            <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Panama Shift Duty Calculator</h1>
+            <p class="text-slate-500 font-medium">Detailed Man-Hour Breakdown & Team Composition Analysis</p>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            <!-- Left Column: Inputs -->
-            <div class="lg:col-span-2 space-y-6">
-                
+            <!-- Left Side: Inputs (4 Columns) -->
+            <div class="lg:col-span-5 space-y-6">
                 <!-- 1. Total Pool -->
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                    <h2 class="text-lg font-bold mb-4 text-blue-600 flex items-center">
-                        <span class="mr-2">👥</span> 1. Total Personnel Pool
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-lg font-bold mb-4 text-blue-700 flex items-center">
+                        <span class="mr-2">👥</span> 1. Personnel Pool
                     </h2>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-slate-700">Total Senior Officers</label>
-                            <input type="number" id="poolSO" value="5" class="mt-1 w-full p-2 bg-slate-50 border rounded-md" oninput="calculate()">
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Senior Officers</label>
+                            <input type="number" id="poolSO" value="5" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" oninput="calculate()">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700">Total Junior Officers</label>
-                            <input type="number" id="poolJO" value="12" class="mt-1 w-full p-2 bg-slate-50 border rounded-md" oninput="calculate()">
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Junior Officers</label>
+                            <input type="number" id="poolJO" value="12" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" oninput="calculate()">
                         </div>
                     </div>
                 </div>
 
-                <!-- 2. Team Composition Requirement -->
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                    <h2 class="text-lg font-bold mb-4 text-green-600 flex items-center">
-                        <span class="mr-2">📋</span> 2. Shift Requirement (Per Team)
+                <!-- 2. Shift Requirements -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-lg font-bold mb-4 text-emerald-700 flex items-center">
+                        <span class="mr-2">🛡️</span> 2. Shift Requirement
                     </h2>
-                    <p class="text-xs text-slate-500 mb-4 italic">How many people must be on duty at any given second?</p>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-slate-700">SO per Shift</label>
-                            <input type="number" id="reqSO" value="1" class="mt-1 w-full p-2 bg-slate-50 border rounded-md" oninput="calculate()">
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">SO per Shift</label>
+                            <input type="number" id="reqSO" value="1" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none" oninput="calculate()">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700">JO per Shift</label>
-                            <input type="number" id="reqJO" value="3" class="mt-1 w-full p-2 bg-slate-50 border rounded-md" oninput="calculate()">
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">JO per Shift</label>
+                            <input type="number" id="reqJO" value="3" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none" oninput="calculate()">
                         </div>
                     </div>
                 </div>
 
                 <!-- 3. Commitments -->
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                    <h2 class="text-lg font-bold mb-4 text-orange-600 flex items-center">
-                        <span class="mr-2">⚠️</span> 3. Commitments & Leave
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-orange-400">
+                    <h2 class="text-lg font-bold mb-4 text-orange-700 flex items-center">
+                        <span class="mr-2">🗓️</span> 3. Commitments (Total Days)
                     </h2>
-                    <p class="text-xs text-slate-500 mb-4 italic">Enter total man-days lost to Leave, Course, or MC for the whole pool.</p>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-slate-700">SO Total Leave Days</label>
-                            <input type="number" id="leaveSO" value="0" class="mt-1 w-full p-2 bg-slate-50 border rounded-md" oninput="calculate()">
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">SO Total Leave/MC</label>
+                            <input type="number" id="leaveSO" value="0" class="w-full p-3 bg-orange-50 border border-orange-100 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none" oninput="calculate()">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700">JO Total Leave Days</label>
-                            <input type="number" id="leaveJO" value="0" class="mt-1 w-full p-2 bg-slate-50 border rounded-md" oninput="calculate()">
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">JO Total Leave/MC</label>
+                            <input type="number" id="leaveJO" value="0" class="w-full p-3 bg-orange-50 border border-orange-100 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none" oninput="calculate()">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Column: Results -->
-            <div class="lg:col-span-1">
-                <div class="bg-slate-800 text-white p-6 rounded-xl shadow-lg sticky top-10">
-                    <h2 class="text-xl font-bold mb-6 border-b border-slate-700 pb-2">Cycle Estimates</h2>
-                    
-                    <div class="mb-8">
-                        <p class="text-slate-400 text-xs uppercase tracking-wider font-semibold">Avg. Hours Per Senior</p>
-                        <div class="flex items-baseline">
-                            <span id="resSO" class="text-4xl font-mono text-yellow-400 font-bold">0</span>
-                            <span class="ml-2 text-slate-400">hrs/mth</span>
+            <!-- Right Side: Breakdown (7 Columns) -->
+            <div class="lg:col-span-7 space-y-6">
+                <div class="bg-slate-900 text-white rounded-3xl p-8 shadow-xl">
+                    <h2 class="text-xl font-bold mb-6 flex items-center border-b border-slate-700 pb-4">
+                        <span class="mr-2">📊</span> Cycle Estimates Breakdown
+                    </h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Senior Officer Table -->
+                        <div>
+                            <h3 class="text-blue-400 font-bold uppercase tracking-widest text-xs mb-4">Senior Officers</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-end border-b border-slate-800 pb-2">
+                                    <span class="text-slate-400 text-sm">Monthly <span class="text-[10px] block">(28-day cycle)</span></span>
+                                    <span id="moSO" class="text-3xl font-mono font-bold text-white">0</span>
+                                </div>
+                                <div class="flex justify-between items-end border-b border-slate-800 pb-2">
+                                    <span class="text-slate-400 text-sm">Weekly <span class="text-[10px] block">(avg per week)</span></span>
+                                    <span id="wkSO" class="text-2xl font-mono font-semibold text-slate-200">0</span>
+                                </div>
+                                <div class="flex justify-between items-end">
+                                    <span class="text-slate-400 text-sm">Daily <span class="text-[10px] block">(avg per day)</span></span>
+                                    <span id="dySO" class="text-xl font-mono text-slate-300">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Junior Officer Table -->
+                        <div>
+                            <h3 class="text-emerald-400 font-bold uppercase tracking-widest text-xs mb-4">Junior Officers</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-end border-b border-slate-800 pb-2">
+                                    <span class="text-slate-400 text-sm">Monthly <span class="text-[10px] block">(28-day cycle)</span></span>
+                                    <span id="moJO" class="text-3xl font-mono font-bold text-white">0</span>
+                                </div>
+                                <div class="flex justify-between items-end border-b border-slate-800 pb-2">
+                                    <span class="text-slate-400 text-sm">Weekly <span class="text-[10px] block">(avg per week)</span></span>
+                                    <span id="wkJO" class="text-2xl font-mono font-semibold text-slate-200">0</span>
+                                </div>
+                                <div class="flex justify-between items-end">
+                                    <span class="text-slate-400 text-sm">Daily <span class="text-[10px] block">(avg per day)</span></span>
+                                    <span id="dyJO" class="text-xl font-mono text-slate-300">0</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mb-8">
-                        <p class="text-slate-400 text-xs uppercase tracking-wider font-semibold">Avg. Hours Per Junior</p>
-                        <div class="flex items-baseline">
-                            <span id="resJO" class="text-4xl font-mono text-emerald-400 font-bold">0</span>
-                            <span class="ml-2 text-slate-400">hrs/mth</span>
+                    <div class="mt-10 p-4 bg-slate-800 rounded-2xl border border-slate-700">
+                        <div class="flex items-center space-x-3">
+                            <div id="statusIndicator" class="h-3 w-3 rounded-full bg-emerald-500 animate-pulse"></div>
+                            <span class="text-xs font-bold uppercase text-slate-400 tracking-wider">Health Assessment</span>
                         </div>
-                    </div>
-
-                    <div class="bg-slate-700 p-4 rounded-lg">
-                        <h3 class="text-sm font-bold mb-2 text-slate-300">Panama Shift Health Check</h3>
-                        <p id="healthMsg" class="text-xs leading-relaxed text-slate-400">
-                            Calculation based on 28-day cycle. Standard workload is approx 168 hours/month.
+                        <p id="healthMsg" class="mt-2 text-sm text-slate-300 leading-relaxed italic">
+                            Analyzing manpower sustainability...
                         </p>
                     </div>
                 </div>
+                
+                <p class="text-[10px] text-slate-400 text-center uppercase tracking-widest font-bold">
+                    Calculations assume 24/7 coverage using standard 12-hour shifts.
+                </p>
             </div>
-
         </div>
     </div>
 
     <script>
         function calculate() {
-            // Inputs
-            const poolSO = parseFloat(document.getElementById('poolSO').value) || 0;
-            const poolJO = parseFloat(document.getElementById('poolJO').value) || 0;
-            const reqSO = parseFloat(document.getElementById('reqSO').value) || 0;
-            const reqJO = parseFloat(document.getElementById('reqJO').value) || 0;
-            const leaveSO = parseFloat(document.getElementById('leaveSO').value) || 0;
-            const leaveJO = parseFloat(document.getElementById('leaveJO').value) || 0;
+            // Grab Inputs
+            const pSO = parseFloat(document.getElementById('poolSO').value) || 0;
+            const pJO = parseFloat(document.getElementById('poolJO').value) || 0;
+            const rSO = parseFloat(document.getElementById('reqSO').value) || 0;
+            const rJO = parseFloat(document.getElementById('reqJO').value) || 0;
+            const lSO = parseFloat(document.getElementById('leaveSO').value) || 0;
+            const lJO = parseFloat(document.getElementById('leaveJO').value) || 0;
 
-            const days = 28; // Standard roster cycle
-            
-            // Total organizational need
-            const totalNeedSO = reqSO * 24 * days;
-            const totalNeedJO = reqJO * 24 * days;
+            const daysInCycle = 28;
 
-            // Leave Logic: 1 day of leave = 12 hours of duty lost from the available pool
-            const effectivePoolSO = poolSO - (leaveSO * 12 / (totalNeedSO / poolSO || 1));
-            const effectivePoolJO = poolJO - (leaveJO * 12 / (totalNeedJO / poolJO || 1));
+            // 1. Calculate Total Organizational Need (Man-hours)
+            const totalHoursNeededSO = rSO * 24 * daysInCycle;
+            const totalHoursNeededJO = rJO * 24 * daysInCycle;
 
-            // Result Calculation
-            // We calculate how many hours of work must be distributed among the remaining staff
-            const hoursSO = poolSO > 0 ? (totalNeedSO / (poolSO - (leaveSO / 14))) : 0;
-            const hoursJO = poolJO > 0 ? (totalNeedJO / (poolJO - (leaveJO / 14))) : 0;
+            // 2. Calculate Effective Pool size (subtracting leave/MC)
+            // If someone takes 28 days of leave, they are "0" people available.
+            const effSO = Math.max(0.1, pSO - (lSO / daysInCycle));
+            const effJO = Math.max(0.1, pJO - (lJO / daysInCycle));
 
-            document.getElementById('resSO').innerText = Math.round(hoursSO);
-            document.getElementById('resJO').innerText = Math.round(hoursJO);
+            // 3. Compute Averages
+            const monthSO = totalHoursNeededSO / effSO;
+            const monthJO = totalHoursNeededJO / effJO;
 
-            // Dynamic Health Message
-            let msg = "Based on a 28-day cycle. ";
-            if (hoursJO > 180) {
-                msg += "⚠️ High workload detected for Juniors. Consider increasing manpower.";
-            } else if (hoursJO < 150) {
-                msg += "✅ Manpower is healthy for this requirement.";
+            // Update DOM - Senior
+            document.getElementById('moSO').innerText = Math.round(monthSO) + "h";
+            document.getElementById('wkSO').innerText = (monthSO / 4).toFixed(1) + "h";
+            document.getElementById('dySO').innerText = (monthSO / 28).toFixed(1) + "h";
+
+            // Update DOM - Junior
+            document.getElementById('moJO').innerText = Math.round(monthJO) + "h";
+            document.getElementById('wkJO').innerText = (monthJO / 4).toFixed(1) + "h";
+            document.getElementById('dyJO').innerText = (monthJO / 28).toFixed(1) + "h";
+
+            // 4. Health Messaging Logic
+            const avgWk = monthJO / 4;
+            const msgBox = document.getElementById('healthMsg');
+            const indicator = document.getElementById('statusIndicator');
+
+            if (avgWk > 48) {
+                msgBox.innerHTML = "⚠️ <strong class='text-red-400'>CRITICAL OVERLOAD:</strong> Your Junior Officers are averaging over 48h/week. This will cause burnout and is likely unsustainable for a long-term Panama rotation.";
+                indicator.className = "h-3 w-3 rounded-full bg-red-500 animate-ping";
+            } else if (avgWk > 42.5) {
+                msgBox.innerHTML = "⚖️ <strong class='text-orange-400'>HIGH WORKLOAD:</strong> Personnel are exceeding the standard 42h/week average. Monitor for fatigue.";
+                indicator.className = "h-3 w-3 rounded-full bg-orange-400 animate-pulse";
             } else {
-                msg += "⚖️ Workload is balanced for a standard Panama cycle.";
+                msgBox.innerHTML = "✅ <strong class='text-emerald-400'>HEALTHY:</strong> The roster is well-balanced. The current pool can comfortably handle shift commitments and leave without excessive overtime.";
+                indicator.className = "h-3 w-3 rounded-full bg-emerald-500";
             }
-            document.getElementById('healthMsg').innerText = msg;
         }
 
-        // Run once on load
+        // Initial Run
         window.onload = calculate;
     </script>
 </body>
