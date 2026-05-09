@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ops Duty Command - Calendar</title>
+    <title>Ops Duty Command - Requirement Based</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @media print { .no-print { display: none; } }
-        .calendar-day { min-height: 120px; border: 1px solid #e2e8f0; transition: all 0.2s; }
-        .calendar-day:hover { background-color: #f8fafc; }
-        .duty-tag { font-size: 0.65rem; padding: 1px 4px; border-radius: 3px; margin-bottom: 1px; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-        .tag-day { background: #dcfce7; color: #166534; border-left: 3px solid #22c55e; }
-        .tag-night { background: #f1f5f9; color: #334155; border-left: 3px solid #64748b; }
-        .tag-shadow { background: #f3e8ff; color: #6b21a8; border-left: 3px solid #a855f7; }
-        .tag-comsec { background: #ffedd5; color: #9a3412; border-left: 3px solid #f97316; }
-        .tag-datahall { background: #dbeafe; color: #1e40af; border-left: 3px solid #3b82f6; }
+        @media print { .no-print { display: none; } .calendar-day { min-height: 80px !important; } }
+        .calendar-day { min-height: 140px; border: 1px solid #e2e8f0; font-size: 0.7rem; }
+        .duty-tag { padding: 2px 4px; border-radius: 4px; margin-bottom: 2px; display: block; border-left-width: 4px; }
+        /* Colors for the 4 Requirements */
+        .tag-sk-day { background: #dcfce7; color: #166534; border-color: #22c55e; } /* SK Day */
+        .tag-sk-night { background: #f1f5f9; color: #334155; border-color: #64748b; } /* SK Night */
+        .tag-shadow { background: #f3e8ff; color: #6b21a8; border-color: #a855f7; } /* CNOC Shadow */
+        .tag-comsec { background: #ffedd5; color: #9a3412; border-color: #f97316; } /* COMSEC */
+        .tag-datahall { background: #dbeafe; color: #1e40af; border-color: #3b82f6; } /* Datahall */
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans">
@@ -24,80 +24,93 @@
         <header class="flex flex-wrap justify-between items-center mb-6 bg-white p-6 rounded-2xl shadow-sm border gap-4">
             <div>
                 <h1 class="text-3xl font-black tracking-tight text-slate-800">Duty Command Center</h1>
-                <p class="text-slate-500 text-sm font-medium uppercase tracking-tighter">Panama 2-2-3 Global Roster</p>
+                <p class="text-slate-500 text-sm font-medium uppercase tracking-tighter">Requirement-Based Allocation</p>
             </div>
             
             <div class="flex items-center gap-4 no-print">
                 <div class="flex bg-slate-100 p-1 rounded-xl border">
                     <button onclick="changeMonth(-1)" class="p-2 hover:bg-white rounded-lg transition">◀</button>
-                    <div id="currentMonthDisplay" class="px-6 py-2 font-bold text-slate-700 min-w-[150px] text-center">Month Year</div>
+                    <div id="currentMonthDisplay" class="px-6 py-2 font-bold text-slate-700 min-w-[150px] text-center">May 2026</div>
                     <button onclick="changeMonth(1)" class="p-2 hover:bg-white rounded-lg transition">▶</button>
                 </div>
-                <button onclick="window.print()" class="bg-slate-800 text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg transition active:scale-95">Print Roster</button>
+                <button onclick="window.print()" class="bg-slate-800 text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg transition">Print</button>
             </div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            <!-- Sidebar -->
+            
+            <!-- Sidebar: Inputs -->
             <div class="lg:col-span-1 space-y-6 no-print">
-                <!-- Personnel -->
-                <div class="bg-white p-5 rounded-2xl shadow-sm border">
-                    <h2 class="text-sm font-bold text-blue-600 uppercase mb-4 tracking-widest flex justify-between">
-                        Personnel Pool <span id="pCount" class="text-slate-400">0</span>
-                    </h2>
-                    <div class="space-y-2">
-                        <input type="text" id="pName" placeholder="Name" class="w-full p-2 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                        <div class="grid grid-cols-2 gap-2">
-                            <select id="pRank" class="p-2 border rounded-xl text-sm bg-slate-50">
-                                <option value="SO">SO (Senior)</option>
-                                <option value="JO">JO (Junior)</option>
-                            </select>
-                            <select id="pTeam" class="p-2 border rounded-xl text-sm bg-slate-50">
-                                <option value="COU">COU</option>
-                                <option value="CIU">CIU</option>
-                                <option value="SOC">SOC</option>
-                            </select>
+                
+                <!-- 1. Duty Requirements -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-l-4 border-l-blue-600">
+                    <h2 class="text-xs font-bold text-slate-400 uppercase mb-4 tracking-widest font-black">1. Duty Requirements</h2>
+                    
+                    <div class="space-y-4">
+                        <!-- SK Duty (Panama) -->
+                        <div class="p-3 bg-slate-50 rounded-xl border">
+                            <p class="text-[10px] font-bold text-emerald-700 uppercase mb-2">🛡️ SK Duty (Panama Shift)</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div><label class="text-[9px]">SO Req</label><input type="number" id="reqSK_SO" value="1" class="w-full p-1 border rounded" oninput="renderCalendar()"></div>
+                                <div><label class="text-[9px]">JO Req</label><input type="number" id="reqSK_JO" value="2" class="w-full p-1 border rounded" oninput="renderCalendar()"></div>
+                            </div>
                         </div>
-                        <button onclick="addPerson()" class="w-full bg-blue-600 text-white py-2.5 rounded-xl font-bold hover:bg-blue-700 transition">Add Personnel</button>
-                    </div>
 
-                    <div class="mt-4 max-h-[300px] overflow-y-auto border-t pt-4">
-                        <div id="personList" class="space-y-2"></div>
+                        <!-- CNOC Shadow -->
+                        <div class="p-3 bg-slate-50 rounded-xl border">
+                            <p class="text-[10px] font-bold text-purple-700 uppercase mb-2">🌑 CNOC Shadow Workforce</p>
+                            <div class="grid grid-cols-2 gap-2 mb-2">
+                                <div><label class="text-[9px]">Time From</label><input type="time" id="shadowFrom" value="08:00" class="w-full p-1 border rounded text-[10px]" oninput="renderCalendar()"></div>
+                                <div><label class="text-[9px]">Time To</label><input type="time" id="shadowTo" value="18:00" class="w-full p-1 border rounded text-[10px]" oninput="renderCalendar()"></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div><label class="text-[9px]">SO Req</label><input type="number" id="reqShadow_SO" value="1" class="w-full p-1 border rounded" oninput="renderCalendar()"></div>
+                                <div><label class="text-[9px]">JO Req</label><input type="number" id="reqShadow_JO" value="1" class="w-full p-1 border rounded" oninput="renderCalendar()"></div>
+                            </div>
+                        </div>
+
+                        <!-- COMSEC -->
+                        <div class="p-3 bg-slate-50 rounded-xl border">
+                            <p class="text-[10px] font-bold text-orange-700 uppercase mb-2">🔑 COMSEC Officer (Standby)</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div><label class="text-[9px]">SO Req</label><input type="number" id="reqComsec_SO" value="1" class="w-full p-1 border rounded" oninput="renderCalendar()"></div>
+                                <div><label class="text-[9px]">JO Req</label><input type="number" id="reqComsec_JO" value="0" class="w-full p-1 border rounded" oninput="renderCalendar()"></div>
+                            </div>
+                        </div>
+
+                        <!-- Datahall -->
+                        <div class="p-3 bg-slate-50 rounded-xl border">
+                            <p class="text-[10px] font-bold text-blue-700 uppercase mb-2">❄️ Datahall Escort</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div><label class="text-[9px]">SO Req</label><input type="number" id="reqData_SO" value="0" class="w-full p-1 border rounded" oninput="renderCalendar()"></div>
+                                <div><label class="text-[9px]">JO Req</label><input type="number" id="reqData_JO" value="1" class="w-full p-1 border rounded" oninput="renderCalendar()"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Daily Requirements -->
-                <div class="bg-white p-5 rounded-2xl shadow-sm border">
-                    <h2 class="text-sm font-bold text-purple-600 uppercase mb-4 tracking-widest">Daily Requirements</h2>
-                    <div class="space-y-4 text-xs">
-                        <div class="flex justify-between items-center p-2 bg-purple-50 rounded-lg">
-                            <span>Shadow (SO/JO)</span>
-                            <div class="flex gap-1">
-                                <input type="number" id="reqShadowSO" value="1" class="w-10 p-1 border rounded text-center" oninput="renderCalendar()">
-                                <input type="number" id="reqShadowJO" value="2" class="w-10 p-1 border rounded text-center" oninput="renderCalendar()">
-                            </div>
+                <!-- 2. Personnel Pool -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-l-4 border-l-slate-400">
+                    <h2 class="text-xs font-bold text-slate-400 uppercase mb-4 tracking-widest font-black">2. Personnel Management</h2>
+                    <div class="space-y-2">
+                        <input type="text" id="pName" placeholder="Staff Name" class="w-full p-2 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                        <div class="grid grid-cols-2 gap-2">
+                            <select id="pRank" class="p-2 border rounded-xl text-sm bg-slate-50"><option value="SO">Senior</option><option value="JO">Junior</option></select>
+                            <select id="pTeam" class="p-2 border rounded-xl text-sm bg-slate-50"><option value="COU">COU</option><option value="CIU">CIU</option><option value="SOC">SOC</option></select>
                         </div>
-                        <div class="flex justify-between items-center p-2 bg-orange-50 rounded-lg">
-                            <span>COMSEC (SO)</span>
-                            <input type="number" id="reqComsec" value="1" class="w-10 p-1 border rounded text-center" oninput="renderCalendar()">
-                        </div>
-                        <div class="flex justify-between items-center p-2 bg-blue-50 rounded-lg">
-                            <span>Datahall (JO)</span>
-                            <input type="number" id="reqDatahall" value="2" class="w-10 p-1 border rounded text-center" oninput="renderCalendar()">
-                        </div>
+                        <button onclick="addPerson()" class="w-full bg-blue-600 text-white py-2.5 rounded-xl font-bold hover:bg-blue-700">Add Staff</button>
                     </div>
+                    <div id="personList" class="mt-4 max-h-[300px] overflow-y-auto space-y-2"></div>
                 </div>
             </div>
 
-            <!-- Calendar Container -->
+            <!-- Main Calendar -->
             <div class="lg:col-span-3">
                 <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
                     <div class="grid grid-cols-7 bg-slate-800 text-white text-[10px] uppercase font-bold text-center py-3 tracking-widest">
                         <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
                     </div>
-                    <div id="calendarGrid" class="grid grid-cols-7 border-l border-t">
-                        <!-- Days generated here -->
-                    </div>
+                    <div id="calendarGrid" class="grid grid-cols-7 border-l border-t"></div>
                 </div>
             </div>
         </div>
@@ -105,26 +118,24 @@
 
     <script>
         let people = [];
-        let currentMonth = new Date(2026, 4, 1); // Start with May 2026 (Month is 0-indexed)
+        let currentMonth = new Date(2026, 4, 1); // May 2026
+        const refDate = new Date(2024, 0, 1); // Fixed point for Panama
 
-        // Panama Pattern: 1=Day Shift, 2=Night Shift, 0=Off
-        // Groups rotate based on this 14-day cycle
-        const patternA = [1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0];
-        const patternC = [2, 2, 0, 0, 2, 2, 2, 0, 0, 2, 2, 0, 0, 0];
-        const patternB = [0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1];
-        const patternD = [0, 0, 2, 2, 0, 0, 0, 2, 2, 0, 0, 2, 2, 2];
-
-        // Reference point for Panama Cycle (Monday, Jan 1, 2024)
-        const refDate = new Date(2024, 0, 1);
+        // Panama Patterns (1=Day, 2=Night, 0=Off)
+        const patterns = {
+            A: [1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0],
+            C: [2, 2, 0, 0, 2, 2, 2, 0, 0, 2, 2, 0, 0, 0],
+            B: [0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1],
+            D: [0, 0, 2, 2, 0, 0, 0, 2, 2, 0, 0, 2, 2, 2]
+        };
 
         function addPerson() {
             const name = document.getElementById('pName').value.trim();
             if (!name) return;
-
             const rank = document.getElementById('pRank').value;
             const team = document.getElementById('pTeam').value;
-            
-            // Auto-allocate Group
+
+            // Auto-allocate to least populated Group
             const counts = { A: 0, B: 0, C: 0, D: 0 };
             people.filter(p => p.rank === rank).forEach(p => counts[p.group]++);
             const group = Object.keys(counts).reduce((a, b) => counts[a] <= counts[b] ? a : b);
@@ -137,131 +148,95 @@
 
         function renderPeople() {
             const list = document.getElementById('personList');
-            document.getElementById('pCount').innerText = people.length;
             list.innerHTML = people.map(p => `
-                <div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl text-xs border border-slate-100">
-                    <div>
-                        <span class="font-bold">${p.name}</span>
-                        <div class="text-[9px] text-slate-400">${p.team} • ${p.rank}</div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <select onchange="updateGroup(${p.id}, this.value)" class="bg-white border rounded p-1 font-bold text-blue-600">
-                            <option value="A" ${p.group==='A'?'selected':''}>A</option>
-                            <option value="B" ${p.group==='B'?'selected':''}>B</option>
-                            <option value="C" ${p.group==='C'?'selected':''}>C</option>
-                            <option value="D" ${p.group==='D'?'selected':''}>D</option>
+                <div class="flex items-center justify-between p-2 bg-slate-50 rounded-xl text-[10px] border">
+                    <div><b>${p.name}</b><br><span class="text-slate-400">${p.rank} | ${p.team}</span></div>
+                    <div class="flex gap-1">
+                        <select onchange="updateGrp(${p.id}, this.value)" class="border rounded px-1 font-bold text-blue-600">
+                            <option value="A" ${p.group==='A'?'selected':''}>A</option><option value="B" ${p.group==='B'?'selected':''}>B</option>
+                            <option value="C" ${p.group==='C'?'selected':''}>C</option><option value="D" ${p.group==='D'?'selected':''}>D</option>
                         </select>
-                        <button onclick="removePerson(${p.id})" class="text-red-400 hover:text-red-600">✕</button>
+                        <button onclick="removePerson(${p.id})" class="text-red-400 ml-1 font-bold">✕</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        function updateGroup(id, val) {
-            const p = people.find(p => p.id === id);
-            if (p) p.group = val;
-            renderCalendar();
-        }
+        function updateGrp(id, v) { people.find(p => p.id === id).group = v; renderCalendar(); }
+        function removePerson(id) { people = people.filter(p => p.id !== id); renderPeople(); renderCalendar(); }
+        function changeMonth(dir) { currentMonth.setMonth(currentMonth.getMonth() + dir); renderCalendar(); }
 
-        function removePerson(id) {
-            people = people.filter(p => p.id !== id);
-            renderPeople();
-            renderCalendar();
-        }
-
-        function changeMonth(dir) {
-            currentMonth.setMonth(currentMonth.getMonth() + dir);
-            renderCalendar();
-        }
-
-        function getDutyForDay(person, date) {
-            const diffTime = date.getTime() - refDate.getTime();
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        function getSKStatus(person, date) {
+            const diffDays = Math.floor((date.getTime() - refDate.getTime()) / 86400000);
             const cycleIdx = ((diffDays % 14) + 14) % 14;
-
-            if (person.group === 'A') return patternA[cycleIdx];
-            if (person.group === 'B') return patternB[cycleIdx];
-            if (person.group === 'C') return patternC[cycleIdx];
-            if (person.group === 'D') return patternD[cycleIdx];
-            return 0;
+            return patterns[person.group][cycleIdx];
         }
 
         function renderCalendar() {
             const grid = document.getElementById('calendarGrid');
-            const display = document.getElementById('currentMonthDisplay');
             grid.innerHTML = '';
-            
             const year = currentMonth.getFullYear();
             const month = currentMonth.getMonth();
-            display.innerText = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentMonth);
+            document.getElementById('currentMonthDisplay').innerText = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentMonth);
 
-            const firstDay = (new Date(year, month, 1).getDay() + 6) % 7; // Monday start
+            const firstDay = (new Date(year, month, 1).getDay() + 6) % 7;
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-            // Requirements
-            const sSO_r = parseInt(document.getElementById('reqShadowSO').value) || 0;
-            const sJO_r = parseInt(document.getElementById('reqShadowJO').value) || 0;
-            const c_r = parseInt(document.getElementById('reqComsec').value) || 0;
-            const d_r = parseInt(document.getElementById('reqDatahall').value) || 0;
+            // Requirements from Inputs
+            const req = {
+                SK_SO: parseInt(document.getElementById('reqSK_SO').value) || 0,
+                SK_JO: parseInt(document.getElementById('reqSK_JO').value) || 0,
+                Shadow_SO: parseInt(document.getElementById('reqShadow_SO').value) || 0,
+                Shadow_JO: parseInt(document.getElementById('reqShadow_JO').value) || 0,
+                Comsec_SO: parseInt(document.getElementById('reqComsec_SO').value) || 0,
+                Comsec_JO: parseInt(document.getElementById('reqComsec_JO').value) || 0,
+                Data_SO: parseInt(document.getElementById('reqData_SO').value) || 0,
+                Data_JO: parseInt(document.getElementById('reqData_JO').value) || 0
+            };
 
-            // Empty slots for previous month
-            for (let i = 0; i < firstDay; i++) {
-                grid.innerHTML += `<div class="calendar-day bg-slate-50/50"></div>`;
-            }
+            const sTime = `${document.getElementById('shadowFrom').value}-${document.getElementById('shadowTo').value}`;
 
-            // Generate Days
+            for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="calendar-day bg-slate-50/50"></div>`;
+
             for (let d = 1; d <= daysInMonth; d++) {
                 const date = new Date(year, month, d);
-                let dayHtml = `<div class="calendar-day p-1 bg-white border-r border-b">
-                    <div class="text-[10px] font-bold text-slate-300 mb-1">${d}</div>`;
+                let dayHtml = `<div class="calendar-day p-2 bg-white border-r border-b"><div class="font-bold text-slate-300 mb-2">${d}</div>`;
                 
-                let dayShift = [], nightShift = [], offPool = [];
+                let skDay = [], skNight = [], offPool = [];
 
+                // 1. Primary: Assign SK Panama Duties
                 people.forEach(p => {
-                    const status = getDutyForDay(p, date);
-                    if (status === 1) dayShift.push(p);
-                    else if (status === 2) nightShift.push(p);
+                    const status = getSKStatus(p, date);
+                    if (status === 1) skDay.push(p);
+                    else if (status === 2) skNight.push(p);
                     else offPool.push({...p});
                 });
 
-                // Display Shifts
-                dayShift.forEach(p => dayHtml += `<span class="duty-tag tag-day">☀️ ${p.name}</span>`);
-                nightShift.forEach(p => dayHtml += `<span class="duty-tag tag-night">🌙 ${p.name}</span>`);
+                // Display SK (Limited to required count)
+                skDay.slice(0, req.SK_SO + req.SK_JO).forEach(p => dayHtml += `<span class="duty-tag tag-sk-day">🛡️ SK-DAY: ${p.name}</span>`);
+                skNight.slice(0, req.SK_SO + req.SK_JO).forEach(p => dayHtml += `<span class="duty-tag tag-sk-night">🛡️ SK-NIGHT: ${p.name}</span>`);
 
-                // Distribute Commitments from Off Pool
+                // 2. Secondary: Allocate commitments from "Off" staff
                 let soOff = offPool.filter(p => p.rank === 'SO');
                 let joOff = offPool.filter(p => p.rank === 'JO');
 
-                // COMSEC (SO Only)
-                for (let i = 0; i < c_r && soOff.length > 0; i++) {
-                    let p = soOff.shift();
-                    dayHtml += `<span class="duty-tag tag-comsec">🔑 COMSEC: ${p.name}</span>`;
-                }
-                // Shadow SO
-                for (let i = 0; i < sSO_r && soOff.length > 0; i++) {
-                    let p = soOff.shift();
-                    dayHtml += `<span class="duty-tag tag-shadow">👥 SHADOW: ${p.name}</span>`;
-                }
-                // Shadow JO
-                for (let i = 0; i < sJO_r && joOff.length > 0; i++) {
-                    let p = joOff.shift();
-                    dayHtml += `<span class="duty-tag tag-shadow">👥 SHADOW: ${p.name}</span>`;
-                }
+                // Shadow
+                for (let i=0; i<req.Shadow_SO && soOff.length > 0; i++) dayHtml += `<span class="duty-tag tag-shadow">🌑 SHAD(${sTime}): ${soOff.shift().name}</span>`;
+                for (let i=0; i<req.Shadow_JO && joOff.length > 0; i++) dayHtml += `<span class="duty-tag tag-shadow">🌑 SHAD(${sTime}): ${joOff.shift().name}</span>`;
+                
+                // COMSEC
+                for (let i=0; i<req.Comsec_SO && soOff.length > 0; i++) dayHtml += `<span class="duty-tag tag-comsec">🔑 COMSEC: ${soOff.shift().name}</span>`;
+                for (let i=0; i<req.Comsec_JO && joOff.length > 0; i++) dayHtml += `<span class="duty-tag tag-comsec">🔑 COMSEC: ${joOff.shift().name}</span>`;
+
                 // Datahall
-                for (let i = 0; i < d_r && joOff.length > 0; i++) {
-                    let p = joOff.shift();
-                    dayHtml += `<span class="duty-tag tag-datahall">❄️ DATA: ${p.name}</span>`;
-                }
+                for (let i=0; i<req.Data_SO && soOff.length > 0; i++) dayHtml += `<span class="duty-tag tag-datahall">❄️ DATA: ${soOff.shift().name}</span>`;
+                for (let i=0; i<req.Data_JO && joOff.length > 0; i++) dayHtml += `<span class="duty-tag tag-datahall">❄️ DATA: ${joOff.shift().name}</span>`;
 
                 dayHtml += `</div>`;
                 grid.innerHTML += dayHtml;
             }
         }
-
-        window.onload = () => {
-            renderPeople();
-            renderCalendar();
-        };
+        window.onload = renderCalendar;
     </script>
 </body>
 </html>
