@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duty Roster Breakdown</title>
+    <title>Duty Roster & Shadow Workforce Calc</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 min-h-screen p-4 md:p-10 font-sans">
     <div class="max-w-6xl mx-auto">
         <header class="mb-8 border-b border-slate-300 pb-4">
-            <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Panama Shift Duty Calculator</h1>
-            <p class="text-slate-500 font-medium">Detailed Man-Hour Breakdown & Team Composition Analysis</p>
+            <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Duty Roster Calculator</h1>
+            <p class="text-slate-500 font-medium">Panama 24/7 + CNOC Shadow Workforce Integration</p>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            <!-- Left Side: Inputs (4 Columns) -->
+            <!-- Left Side: Inputs -->
             <div class="lg:col-span-5 space-y-6">
+                
                 <!-- 1. Total Pool -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                     <h2 class="text-lg font-bold mb-4 text-blue-700 flex items-center">
@@ -24,73 +25,104 @@
                     </h2>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Senior Officers</label>
-                            <input type="number" id="poolSO" value="5" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" oninput="calculate()">
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Total Senior Officers</label>
+                            <input type="number" id="poolSO" value="5" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" oninput="calculate()">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Junior Officers</label>
-                            <input type="number" id="poolJO" value="12" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" oninput="calculate()">
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Total Junior Officers</label>
+                            <input type="number" id="poolJO" value="12" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" oninput="calculate()">
                         </div>
                     </div>
                 </div>
 
-                <!-- 2. Shift Requirements -->
+                <!-- 2. Standard 24/7 Shift Requirement -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                     <h2 class="text-lg font-bold mb-4 text-emerald-700 flex items-center">
-                        <span class="mr-2">🛡️</span> 2. Shift Requirement
+                        <span class="mr-2">🛡️</span> 2. Standard 24/7 Requirement
                     </h2>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">SO per Shift</label>
-                            <input type="number" id="reqSO" value="1" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none" oninput="calculate()">
+                            <input type="number" id="reqSO" value="1" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500" oninput="calculate()">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">JO per Shift</label>
-                            <input type="number" id="reqJO" value="3" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none" oninput="calculate()">
+                            <input type="number" id="reqJO" value="3" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500" oninput="calculate()">
                         </div>
                     </div>
                 </div>
 
-                <!-- 3. Commitments -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-orange-400">
+                <!-- 3. CNOC Shadow Workforce Commitment -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-purple-500">
+                    <h2 class="text-lg font-bold mb-4 text-purple-700 flex items-center">
+                        <span class="mr-2">🌑</span> 3. CNOC Shadow Workforce
+                    </h2>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Start Time</label>
+                            <input type="time" id="shadowStart" value="08:00" class="w-full p-3 bg-purple-50 border border-purple-100 rounded-xl outline-none focus:ring-2 focus:ring-purple-500" oninput="calculate()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">End Time</label>
+                            <input type="time" id="shadowEnd" value="18:00" class="w-full p-3 bg-purple-50 border border-purple-100 rounded-xl outline-none focus:ring-2 focus:ring-purple-500" oninput="calculate()">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">SO Required</label>
+                            <input type="number" id="shadowSO" value="1" class="w-full p-3 bg-purple-50 border border-purple-100 rounded-xl outline-none focus:ring-2 focus:ring-purple-500" oninput="calculate()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">JO Required</label>
+                            <input type="number" id="shadowJO" value="2" class="w-full p-3 bg-purple-50 border border-purple-100 rounded-xl outline-none focus:ring-2 focus:ring-purple-500" oninput="calculate()">
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Days per Cycle (out of 28)</label>
+                        <input type="number" id="shadowDays" value="20" class="w-full p-3 bg-purple-50 border border-purple-100 rounded-xl outline-none focus:ring-2 focus:ring-purple-500" oninput="calculate()">
+                    </div>
+                </div>
+
+                <!-- 4. Leave/MC -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                     <h2 class="text-lg font-bold mb-4 text-orange-700 flex items-center">
-                        <span class="mr-2">🗓️</span> 3. Commitments (Total Days)
+                        <span class="mr-2">🗓️</span> 4. Leave/MC (Total Days)
                     </h2>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">SO Total Leave/MC</label>
-                            <input type="number" id="leaveSO" value="0" class="w-full p-3 bg-orange-50 border border-orange-100 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none" oninput="calculate()">
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">SO Leave Days</label>
+                            <input type="number" id="leaveSO" value="0" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-orange-500" oninput="calculate()">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">JO Total Leave/MC</label>
-                            <input type="number" id="leaveJO" value="0" class="w-full p-3 bg-orange-50 border border-orange-100 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none" oninput="calculate()">
+                            <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">JO Leave Days</label>
+                            <input type="number" id="leaveJO" value="0" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-orange-500" oninput="calculate()">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Side: Breakdown (7 Columns) -->
+            <!-- Right Side: Breakdown -->
             <div class="lg:col-span-7 space-y-6">
                 <div class="bg-slate-900 text-white rounded-3xl p-8 shadow-xl">
                     <h2 class="text-xl font-bold mb-6 flex items-center border-b border-slate-700 pb-4">
-                        <span class="mr-2">📊</span> Cycle Estimates Breakdown
+                        <span class="mr-2">📊</span> Duty Load Breakdown
                     </h2>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
                         <!-- Senior Officer Table -->
                         <div>
                             <h3 class="text-blue-400 font-bold uppercase tracking-widest text-xs mb-4">Senior Officers</h3>
-                            <div class="space-y-4">
+                            <div class="space-y-5">
                                 <div class="flex justify-between items-end border-b border-slate-800 pb-2">
-                                    <span class="text-slate-400 text-sm">Monthly <span class="text-[10px] block">(28-day cycle)</span></span>
+                                    <span class="text-slate-400 text-sm">Monthly Total</span>
                                     <span id="moSO" class="text-3xl font-mono font-bold text-white">0</span>
                                 </div>
                                 <div class="flex justify-between items-end border-b border-slate-800 pb-2">
-                                    <span class="text-slate-400 text-sm">Weekly <span class="text-[10px] block">(avg per week)</span></span>
+                                    <span class="text-slate-400 text-sm">Weekly Average</span>
                                     <span id="wkSO" class="text-2xl font-mono font-semibold text-slate-200">0</span>
                                 </div>
                                 <div class="flex justify-between items-end">
-                                    <span class="text-slate-400 text-sm">Daily <span class="text-[10px] block">(avg per day)</span></span>
+                                    <span class="text-slate-400 text-sm">Daily Average</span>
                                     <span id="dySO" class="text-xl font-mono text-slate-300">0</span>
                                 </div>
                             </div>
@@ -99,44 +131,48 @@
                         <!-- Junior Officer Table -->
                         <div>
                             <h3 class="text-emerald-400 font-bold uppercase tracking-widest text-xs mb-4">Junior Officers</h3>
-                            <div class="space-y-4">
+                            <div class="space-y-5">
                                 <div class="flex justify-between items-end border-b border-slate-800 pb-2">
-                                    <span class="text-slate-400 text-sm">Monthly <span class="text-[10px] block">(28-day cycle)</span></span>
+                                    <span class="text-slate-400 text-sm">Monthly Total</span>
                                     <span id="moJO" class="text-3xl font-mono font-bold text-white">0</span>
                                 </div>
                                 <div class="flex justify-between items-end border-b border-slate-800 pb-2">
-                                    <span class="text-slate-400 text-sm">Weekly <span class="text-[10px] block">(avg per week)</span></span>
+                                    <span class="text-slate-400 text-sm">Weekly Average</span>
                                     <span id="wkJO" class="text-2xl font-mono font-semibold text-slate-200">0</span>
                                 </div>
                                 <div class="flex justify-between items-end">
-                                    <span class="text-slate-400 text-sm">Daily <span class="text-[10px] block">(avg per day)</span></span>
+                                    <span class="text-slate-400 text-sm">Daily Average</span>
                                     <span id="dyJO" class="text-xl font-mono text-slate-300">0</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-10 p-4 bg-slate-800 rounded-2xl border border-slate-700">
-                        <div class="flex items-center space-x-3">
-                            <div id="statusIndicator" class="h-3 w-3 rounded-full bg-emerald-500 animate-pulse"></div>
-                            <span class="text-xs font-bold uppercase text-slate-400 tracking-wider">Health Assessment</span>
+                    <!-- Workload Analysis -->
+                    <div class="mt-10 p-6 bg-slate-800 rounded-2xl border border-slate-700">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <div id="statusIndicator" class="h-3 w-3 rounded-full bg-emerald-500"></div>
+                            <span class="text-xs font-bold uppercase text-slate-400 tracking-wider">Workload Assessment</span>
                         </div>
-                        <p id="healthMsg" class="mt-2 text-sm text-slate-300 leading-relaxed italic">
-                            Analyzing manpower sustainability...
+                        <p id="healthMsg" class="text-sm text-slate-300 leading-relaxed italic">
+                            ...
                         </p>
                     </div>
                 </div>
                 
-                <p class="text-[10px] text-slate-400 text-center uppercase tracking-widest font-bold">
-                    Calculations assume 24/7 coverage using standard 12-hour shifts.
-                </p>
+                <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase mb-2">Calculation Logic</h4>
+                    <p class="text-[11px] text-slate-400 leading-relaxed">
+                        Total Pool is reduced proportionally by Leave/MC days. Standard 24/7 requirement (168h/wk) is combined with the Shadow Workforce hours (Duration × Personnel × Frequency). The result is the average duty hours required per person to sustain both requirements.
+                    </p>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         function calculate() {
-            // Grab Inputs
+            // Inputs
             const pSO = parseFloat(document.getElementById('poolSO').value) || 0;
             const pJO = parseFloat(document.getElementById('poolJO').value) || 0;
             const rSO = parseFloat(document.getElementById('reqSO').value) || 0;
@@ -144,49 +180,67 @@
             const lSO = parseFloat(document.getElementById('leaveSO').value) || 0;
             const lJO = parseFloat(document.getElementById('leaveJO').value) || 0;
 
+            // Shadow Inputs
+            const sStart = document.getElementById('shadowStart').value;
+            const sEnd = document.getElementById('shadowEnd').value;
+            const sSO = parseFloat(document.getElementById('shadowSO').value) || 0;
+            const sJO = parseFloat(document.getElementById('shadowJO').value) || 0;
+            const sDays = parseFloat(document.getElementById('shadowDays').value) || 0;
+
             const daysInCycle = 28;
 
-            // 1. Calculate Total Organizational Need (Man-hours)
-            const totalHoursNeededSO = rSO * 24 * daysInCycle;
-            const totalHoursNeededJO = rJO * 24 * daysInCycle;
+            // Calculate Shadow Duration
+            const startArr = sStart.split(':');
+            const endArr = sEnd.split(':');
+            let duration = (parseInt(endArr[0]) + parseInt(endArr[1])/60) - (parseInt(startArr[0]) + parseInt(startArr[1])/60);
+            if (duration < 0) duration += 24; // Handle overnight shifts if any
 
-            // 2. Calculate Effective Pool size (subtracting leave/MC)
-            // If someone takes 28 days of leave, they are "0" people available.
+            // 1. Standard 24/7 Requirement (Total hours for the unit)
+            const baseNeedSO = rSO * 24 * daysInCycle;
+            const baseNeedJO = rJO * 24 * daysInCycle;
+
+            // 2. Shadow Workforce Requirement (Total extra hours)
+            const shadowNeedSO = sSO * duration * sDays;
+            const shadowNeedJO = sJO * duration * sDays;
+
+            // 3. Combined Requirement
+            const totalNeedSO = baseNeedSO + shadowNeedSO;
+            const totalNeedJO = baseNeedJO + shadowNeedJO;
+
+            // 4. Effective Pool (Accounting for leave)
             const effSO = Math.max(0.1, pSO - (lSO / daysInCycle));
             const effJO = Math.max(0.1, pJO - (lJO / daysInCycle));
 
-            // 3. Compute Averages
-            const monthSO = totalHoursNeededSO / effSO;
-            const monthJO = totalHoursNeededJO / effJO;
+            // 5. Compute Final Metrics
+            const monthSO = totalNeedSO / effSO;
+            const monthJO = totalNeedJO / effJO;
 
-            // Update DOM - Senior
+            // Update UI
             document.getElementById('moSO').innerText = Math.round(monthSO) + "h";
             document.getElementById('wkSO').innerText = (monthSO / 4).toFixed(1) + "h";
             document.getElementById('dySO').innerText = (monthSO / 28).toFixed(1) + "h";
 
-            // Update DOM - Junior
             document.getElementById('moJO').innerText = Math.round(monthJO) + "h";
             document.getElementById('wkJO').innerText = (monthJO / 4).toFixed(1) + "h";
             document.getElementById('dyJO').innerText = (monthJO / 28).toFixed(1) + "h";
 
-            // 4. Health Messaging Logic
+            // Health Message
             const avgWk = monthJO / 4;
             const msgBox = document.getElementById('healthMsg');
             const indicator = document.getElementById('statusIndicator');
 
-            if (avgWk > 48) {
-                msgBox.innerHTML = "⚠️ <strong class='text-red-400'>CRITICAL OVERLOAD:</strong> Your Junior Officers are averaging over 48h/week. This will cause burnout and is likely unsustainable for a long-term Panama rotation.";
+            if (avgWk > 50) {
+                msgBox.innerHTML = "🔴 <strong class='text-red-400'>CRITICAL:</strong> Average workload exceeds 50h/week. The addition of the Shadow Workforce has created a severe manpower deficit.";
                 indicator.className = "h-3 w-3 rounded-full bg-red-500 animate-ping";
-            } else if (avgWk > 42.5) {
-                msgBox.innerHTML = "⚖️ <strong class='text-orange-400'>HIGH WORKLOAD:</strong> Personnel are exceeding the standard 42h/week average. Monitor for fatigue.";
-                indicator.className = "h-3 w-3 rounded-full bg-orange-400 animate-pulse";
+            } else if (avgWk > 44) {
+                msgBox.innerHTML = "🟡 <strong class='text-yellow-400'>STRETCHED:</strong> Average workload is approx. " + avgWk.toFixed(1) + "h/week. This is manageable but leaves no room for unexpected MC or emergency leave.";
+                indicator.className = "h-3 w-3 rounded-full bg-yellow-500 animate-pulse";
             } else {
-                msgBox.innerHTML = "✅ <strong class='text-emerald-400'>HEALTHY:</strong> The roster is well-balanced. The current pool can comfortably handle shift commitments and leave without excessive overtime.";
+                msgBox.innerHTML = "🟢 <strong class='text-emerald-400'>SUSTAINABLE:</strong> The current pool can cover both the 24/7 duty and the CNOC Shadow Workforce within standard hours.";
                 indicator.className = "h-3 w-3 rounded-full bg-emerald-500";
             }
         }
 
-        // Initial Run
         window.onload = calculate;
     </script>
 </body>
